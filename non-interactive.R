@@ -69,7 +69,21 @@ roads_ll <- st_transform(roads,crs=ll_crs)
 rivers    <- st_read("spatial/spatial/cumbria_rivers.shp")
 rivers_ll <- st_transform(rivers, crs = ll_crs)
 
+# Cable data
+cable    <- st_read("all_datasets5_0/Cable.shp")
+cable_ll <- st_transform(cable, crs = ll_crs)
 
+# Substation data
+substation    <- st_read("all_datasets5_0/Substations.shp")
+substation_ll <- st_transform(substation, crs = ll_crs)
+
+# Overhead Lines data
+ohl    <- st_read("all_datasets5_0/OHL.shp")
+ohl_ll <- st_transform(ohl, crs = ll_crs)
+
+# Tower data
+tower    <- st_read("all_datasets5_0/Towers.shp")
+tower_ll <- st_transform(tower, crs = ll_crs)
 
 
 # Downloading data from the NBN Atlas ####
@@ -161,6 +175,8 @@ species_plot <- leaflet() %>%
     overlayGroups = c("Red Squirrel", "Hawfinch", "Otter", "Natterer's Bat"),
     options = layersControlOptions(collapsed = TRUE)
   )  
+
+
 
 species_plot
 
