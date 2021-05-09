@@ -106,7 +106,6 @@ sqrecords_per_yr <- squirrel2 %>%
 ggplot(sqrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
   geom_line()
 
-
 # The same process is performed but for Hawfinch birds
 hawfinch <- read.csv("records-2021-05-06/records-2021-05-06.csv")
 hawfinch <- hawfinch[hawfinch$identificationVerificationStatus.processed == "Accepted",]
@@ -125,10 +124,8 @@ ggplot(hfrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
 otter <- read.csv("otter/otter.csv")
 otter <- otter[otter$identificationVerificationStatus.processed == "Accepted",]
 
-
 ggplot(otter, aes(x=year.processed)) +
   geom_histogram()
-
 
 otrecords_per_yr <- otter %>% 
   group_by(year.processed) %>% 
@@ -179,7 +176,7 @@ species_plot <- leaflet() %>%
 species_plot
 
 
-# Joining these two intermediary steps together to be displayed on one map shwoing the environment and species ####
+# Joining these two intermediary steps together to be displayed on one map shwoing the environment and species of interest ####
 
 map_view <- leaflet() %>% 
   addTiles(group= "OSM") %>% 
