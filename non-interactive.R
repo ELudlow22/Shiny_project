@@ -137,3 +137,33 @@ batrecords_per_yr <- bat %>%
 ggplot(batrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
   geom_line()
 
+# Creating an intermediate step of showing the species first in their own interactive map ####
+# Using addCircleMarkers the data can be plotted with identifying features
+#The overlayGroups and grouping feature within addCircleMarkers means these can be toggled on and off
+
+species_plot <- leaflet() %>%
+  addTiles(group = "OSM (default)") %>% 
+  addProviderTiles(providers$Esri.WorldImagery, group = "Satellite") %>% 
+  addCircleMarkers(squirrel2$decimalLongitude.processed, squirrel2$decimalLatitude.processed, label = squirrel2$scientificName.processed, 
+                   labelOptions = labelOptions(interactive = "TRUE"),
+                   radius = 2, fillOpacity = 0.5, opacity = 0.5, col="red", group = "Red Squirrel", popup = squirrel2$scientificNameprocessed) %>%
+  addCircleMarkers(hawfinch$decimalLongitude.processed, hawfinch$decimalLatitude.processed, label = hawfinch$scientificName.processed, 
+                   labelOptions = labelOptions(interactive = "TRUE"),
+                   radius = 2, fillOpacity = 0.5, opacity = 0.5, col="blue", group = "Hawfinch", popup = hawfinch$scientificName.processed) %>%
+  addCircleMarkers(otter$decimalLongitude.processed, otter$decimalLatitude.processed, label = otter$scientificName.processed,
+                   labelOptions = labelOptions(interactive = "TRUE"),
+                   radius = 2, fillOpacity = 0.5, opacity = 0.5, col="yellow", group = "Otter", popup = otter$scientificNameprocessed) %>% 
+  addCircleMarkers(bat$decimalLongitude.processed, bat$decimalLatitude.processed, label = bat$scientificName.processed,
+                   labelOptions = labelOptions(interactive = "TRUE"),
+                   radius = 2, fillOpacity = 0.5, opacity = 0.5, col="pink", group = "Natterer's Bat", popup = bat$scientificNameprocessed) %>%  
+  addLayersControl(
+    baseGroups = c("OSM (default)", "Satellite"), 
+    overlayGroups = c("Red Squirrel", "Hawfinch", "Otter", "Natterer's Bat"),
+    options = layersControlOptions(collapsed = TRUE)
+  )  
+
+species_plot
+
+
+
+
