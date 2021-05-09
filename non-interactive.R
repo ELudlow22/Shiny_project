@@ -49,3 +49,23 @@ elevation_view <- leaflet() %>%
 
 # To view it
 elevation_view  
+
+
+# Loading in other variables in the same format as the elevation data, converting it to latitude and longitude ####
+
+#Settlement data 
+settlement    <- st_read("spatial/spatial/cumbria_settlements.shp")
+settlement_ll <- st_transform(settlement,crs=ll_crs)
+
+# Lakes data
+lakes    <- st_read("spatial/spatial/cumbria_lakes.shp")
+lakes_ll <- st_transform(lakes,crs=ll_crs)
+
+# Roads data
+roads    <- st_read("spatial/spatial/cumbria_roads.shp")
+roads_ll <- st_transform(roads,crs=ll_crs)
+
+# Rivers data
+rivers    <- st_read("spatial/spatial/cumbria_rivers.shp")
+rivers_ll <- st_transform(rivers, crs = ll_crs)
+
