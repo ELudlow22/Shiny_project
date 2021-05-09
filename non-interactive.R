@@ -176,9 +176,45 @@ species_plot <- leaflet() %>%
     options = layersControlOptions(collapsed = TRUE)
   )  
 
-
-
 species_plot
+
+
+# Joining these two intermediary steps together to be displayed on one map shwoing the environment and species ####
+
+map_view <- leaflet() %>% 
+  addTiles(group= "OSM") %>% 
+  addProviderTiles(providers$Esri.WorldImagery, group= "Satellite") %>%
+  setView(lng = -3.0886, lat = 54.4609, zoom = 9) %>%
+  addFeatures(lakes_ll, group = "Lakes Map") %>%
+  addFeatures(rivers_ll, group = "Rivers Map")%>%
+  addFeatures(cable_ll, group = "Cables Map")%>%
+  addFeatures(substation_ll, group = "Substations Map")%>%
+  addFeatures(ohl_ll, group = "Overhead Lines Map")%>%
+  addFeatures(tower_ll, group = "Towers Map")%>%
+  addFeatures(settlement_ll, group = "Settlements Map")%>%
+  addRasterImage(elevation500m_ll ,col=terrain.colors(30), group = "Elevation Map") %>% 
+  addCircleMarkers(squirrel2$decimalLongitude.processed, squirrel2$decimalLatitude.processed, label = squirrel2$scientificName.processed,
+                   radius=2, fillOpacity = 0.5, opacity = 0.5, col="red", group = "Red Squirrel", popup = squirrel2$scientificName.processed,)%>%
+  addCircleMarkers(otter$decimalLongitude.processed, otter$decimalLatitude.processed, label = otter$scientificName.processed,
+                   radius=2, fillOpacity = 0.5, opacity = 0.5, col="blue", group = "Otter", label = otter$scientificName.processed,)%>%
+  addCircleMarkers(hawfinch$decimalLongitude.processed, hawfinch$decimalLatitude.processed, popup = hawfinch$scientificName.processed,
+                   radius=2, fillOpacity = 0.5, opacity = 0.5, col="yellow", group = "Hawfinch", popup = hawfinch$scientificNameprocessed)%>%
+  addCircleMarkers(bat$decimalLongitude.processed, bat$decimalLatitude.processed, label = bat$scientificName.processed,
+                   labelOptions = labelOptions(interactive = "TRUE"),
+                   radius = 2, fillOpacity = 0.5, opacity = 0.5, col="pink", group= "Natterer's Bat", popup = bat$scientificNameprocessed) %>% 
+  addLayersControl(
+    baseGroups = c("OSM", "Satellite"),
+    overlayGroups = c("Elevation Map", "Lakes Map", "Rivers Map", "Settlements Map", "Red Squirrel", "Otter", "Natterer's Bat", "Hawfinch", "Cables Map", "Towers Map", "Substations Map", "Overhead Lines Map"),
+    options = layersControlOptions(collapsed = TRUE)
+  )
+
+map_view
+
+
+
+
+
+
 
 
 
