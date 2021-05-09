@@ -69,3 +69,71 @@ roads_ll <- st_transform(roads,crs=ll_crs)
 rivers    <- st_read("spatial/spatial/cumbria_rivers.shp")
 rivers_ll <- st_transform(rivers, crs = ll_crs)
 
+
+
+
+# Downloading data from the NBN Atlas ####
+
+# Species were based on those that may be of particular interest to see and record the wildlife of Cumbria
+
+# Reading in Red Squirrel records that were restricted to Cumbria using the polygon tool in NBN Atlas
+# Any results that were not 'accepted', thus, a high level of certainty were filtered out
+squirrel2 <- read.csv("squirrel/squirrel.csv")
+squirrel2 <- squirrel2[squirrel2$identificationVerificationStatus.processed == "Accepted",]
+
+# Identifying and displaying how records have changed over time
+ggplot(squirrel2, aes(x=year.processed)) +
+  geom_histogram()
+
+sqrecords_per_yr <- squirrel2 %>% 
+  group_by(year.processed) %>% 
+  summarise(count_per_year = n())
+
+ggplot(sqrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+  geom_line()
+
+
+# The same process is performed but for Hawfinch birds
+hawfinch <- read.csv("records-2021-05-06/records-2021-05-06.csv")
+hawfinch <- hawfinch[hawfinch$identificationVerificationStatus.processed == "Accepted",]
+
+ggplot(hawfinch, aes(x=year.processed)) +
+  geom_histogram()
+
+hfrecords_per_yr <- hawfinch %>% 
+  group_by(year.processed) %>% 
+  summarise(count_per_year = n())
+
+ggplot(hfrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+  geom_line()
+
+# Similarly also for Otters
+otter <- read.csv("otter/otter.csv")
+otter <- otter[otter$identificationVerificationStatus.processed == "Accepted",]
+
+
+ggplot(otter, aes(x=year.processed)) +
+  geom_histogram()
+
+
+otrecords_per_yr <- otter %>% 
+  group_by(year.processed) %>% 
+  summarise(count_per_year = n())
+
+ggplot(otrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+  geom_line()
+
+# Finally observe records for the Natterer's Bat
+bat <- read.csv("records-2021-05-09/records-2021-05-09.csv")
+bat <- bat[bat$identificationVerificationStatus.processed == "Accepted",]
+
+ggplot(bat, aes(x=year.processed)) +
+  geom_histogram()
+
+batrecords_per_yr <- bat %>% 
+  group_by(year.processed) %>% 
+  summarise(count_per_year = n())
+
+ggplot(batrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+  geom_line()
+
