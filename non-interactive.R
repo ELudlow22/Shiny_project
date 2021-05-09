@@ -193,8 +193,8 @@ map_view <- leaflet() %>%
   addCircleMarkers(squirrel2$decimalLongitude.processed, squirrel2$decimalLatitude.processed, label = squirrel2$scientificName.processed,
                    radius=2, fillOpacity = 0.5, opacity = 0.5, col="red", group = "Red Squirrel", popup = squirrel2$scientificName.processed,)%>%
   addCircleMarkers(otter$decimalLongitude.processed, otter$decimalLatitude.processed, label = otter$scientificName.processed,
-                   radius=2, fillOpacity = 0.5, opacity = 0.5, col="blue", group = "Otter", label = otter$scientificName.processed,)%>%
-  addCircleMarkers(hawfinch$decimalLongitude.processed, hawfinch$decimalLatitude.processed, popup = hawfinch$scientificName.processed,
+                   radius=2, fillOpacity = 0.5, opacity = 0.5, col="blue", group = "Otter", popup = otter$scientificName.processed,)%>%
+  addCircleMarkers(hawfinch$decimalLongitude.processed, hawfinch$decimalLatitude.processed, label = hawfinch$scientificName.processed,
                    radius=2, fillOpacity = 0.5, opacity = 0.5, col="yellow", group = "Hawfinch", popup = hawfinch$scientificNameprocessed)%>%
   addCircleMarkers(bat$decimalLongitude.processed, bat$decimalLatitude.processed, label = bat$scientificName.processed,
                    labelOptions = labelOptions(interactive = "TRUE"),
