@@ -194,5 +194,24 @@ map_view <- leaflet() %>%
 map_view
 
 
+# Load in images of the species of interest to be used later in the decision support system ####
+
+egyptian_goose_image <- base64enc::dataURI(file="www/egyptian_goose.JPG", mime="image/jpg")
+ruddy_duck_image     <- base64enc::dataURI(file="www/ruddy_duck.JPG", mime="image/jpg")
+natterers_bat_image  <- base64enc::dataURI(file="www/natterers_bat_image.JPG", mime="image/jpg")
+
+
+# Similarly name the relevant record plots so they can be fed into the shiny app easier ####
+
+bat_plot <- ggplot(batrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+    geom_line()
+ruddy_duck_plot <- ggplot(rdrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+    geom_line()
+egyptian_goose_plot <- ggplot(egrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+    geom_line()
+
+
+
+
 
 
