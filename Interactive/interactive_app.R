@@ -212,6 +212,133 @@ egyptian_goose_plot <- ggplot(egrecords_per_yr, aes(x = year.processed, y=count_
 
 
 
+# Using the above information, process it into the shiny app to display an interactive map
+# Add pieces of text to provide a more rounded description to aid the users experience
+# Use radioButtons to provide a checklist where the user can select an option
+
+
+ui <- fluidPage(
+    
+    # Application title
+    titlePanel("The Rural Environment in Cumbria"),
+    
+    # Sidebar  
+    sidebarLayout(
+        sidebarPanel( p(strong('Species of Interest:')),
+                      
+                      p(strong('The Ruddy Duck:'),
+                        "The Ruddy Duck (Oxyura jamaicensis) is a bird from North America that is known for its prominent stiff tail. They also have slightly peaked heads and fairly short, thick necks. 
+                      In the summer, male ruddy ducks' bills turn a distinctive bright blue colour, as seen in the image. 
+                      In the winter they tend to be a much more grey or brown colour similar to females. 
+                      Ruddy Ducks were imported to the UK in 1948 where they bred in the wild, and by 2000 the UK population numbered 6,000 birds.
+                      Eradication programmes have reduced the UK’s population to 400-500 birds, evident by the sheer drop off in records seen by the corresponding graph. 
+                        Its records can be seen as red markers in the interactive map at the bottom of the page."),
+                      
+                      img(src=ruddy_duck_image, height="100%", width="100%", align = "centre"),
+                      
+                      p(strong('The Egyptian Goose:'),
+                        "The Egyptian goose (Alopochen aegyptiaca) is native to Africa. It was first brought to Britain in the 17th Century as an ornamental bird for country gentlemen
+                      Used to warmer weather, the Egyptian Goose struggled to establish itself in the harsh conditions of the UK. Recently it has witnessed a population explosion across the nation. 
+                      As the graph shows, Cumbria experienced a population explosion in 2008 but has not seemed to stabilise, causing it to still be rare. 
+                      They can be easily identified with a distinctive 'eyepatch' marking around the eye and long thin legs comparable to a chickens.
+                      These can be seen on the interactive map as yellow markers."), 
+                      
+                      img(src=egyptian_goose_image, height="100%", width="100%", align = "centre"),
+                      
+                      p(strong('The Natterer`s Bat:'),
+                        "The Natterer's Bat (Myotis nattereri) was revealed to be the only species of bat that hibernates in Cumbria. Thus, recordings and observations of its whereabouts are vital for conservation efforts.
+                          This medium-sized bat is a nocturnal creature that mostly feeds off moths and other flying insects. It will often be recorded roosting in old buildings such as churches.
+                          The graph of its records show it is a much more consistent sighting in Cumbria but does succumb to yearly fluctuations
+                        Its data points can be seen in the interactive map, coloured blue."),
+                      
+                      img(src=natterers_bat_image, height="100%", width="100%", align = "centre"), 
+                      
+                      
+                      
+                      
+                      p("Evaluating the information provided, please give some feedback offering an opinion on the feasibility and consequences or lack of that implementing a wind farm may have for the rural environment."),
+                      
+                      
+                      radioButtons(inputId = "my_checkgroup", 
+                                   h2("Do you think Cumbria could facilitate more onshore wind farms"), 
+                                   choices = list("Yes" = 1, 
+                                                  "No" = 2, 
+                                                  "Depends how they were instated" = 3,
+                                                  "Unsure, require more information" = 4),
+                                   selected = 1), 
+                      actionButton(inputId="my_submitstatus", label="Submit")),
+        
+        mainPanel( p("Please feel free to read the side bar, which details species of interest present in Cumbria. 
+        Below are graphs for records of the corresponding species. 
+        Underneath these, an interactive map can be used to investigate different environmental variables, toggling them on and off as you wish.
+        This decision support system enables a more complete judgement to be made when considering different factors that may affect large scale projects such as the installation of a wind farm."),
+                   
+                   plotOutput(outputId = "ruddy_duck_plot"),
+                   
+                   plotOutput(outputId = "egyptian_goose_plot"),
+                   
+                   plotOutput(outputId = "bat_plot"),
+                   
+                   leafletOutput(outputId = "map_view"))))
+
+
+server <- function(input, output) {
+    output$map_view <- renderLeaflet({
+        leaflet() %>% 
+            addTiles(group= "OSM") %>% 
+            addProviderTiles(providers$Esri.WorldImagery, group= "Satellite") %>%
+            setView(lng = -3.0886, lat = 54.4609, zoom = 9) %>%
+            addFeatures(lakes_ll, group = "Lakes Map") %>%
+            addFeatures(rivers_ll, group = "Rivers Map")%>%
+            addFeatures(cable_ll, group = "Cables Map")%>%
+            addFeatures(substation_ll, group = "Substations Map")%>%
+            addFeatures(ohl_ll, group = "Overhead Lines Map")%>%
+            addFeatures(tower_ll, group = "Towers Map")%>%
+            addFeatures(settlement_ll, group = "Settlements Map")%>%
+            addRasterImage(elevation500m_ll ,col=terrain.colors(30), group = "Elevation Map") %>% 
+            addCircleMarkers(ruddy_duck$decimalLongitude.processed, ruddy_duck$decimalLatitude.processed, label = ruddy_duck$scientificName.processed,
+                             radius=2, fillOpacity = 0.5, opacity = 0.5, col="red", group = "Ruddy Duck", popup = ruddy_duck$scientificName.processed,)%>%
+            addCircleMarkers(egyptian_goose$decimalLongitude.processed, egyptian_goose$decimalLatitude.processed, label = egyptian_goose$scientificName.processed,
+                             radius=2, fillOpacity = 0.5, opacity = 0.5, col="yellow", group = "Egyptian Goose", popup = egyptian_goose$scientificName.processed,)%>%
+            addCircleMarkers(bat$decimalLongitude.processed, bat$decimalLatitude.processed, label = bat$scientificName.processed,
+                             labelOptions = labelOptions(interactive = "TRUE"),
+                             radius = 2, fillOpacity = 0.5, opacity = 0.5, col="blue", group= "Natterer's Bat", popup = bat$scientificNameprocessed) %>% 
+            addLayersControl(
+                baseGroups = c("OSM", "Satellite"),
+                overlayGroups = c("Elevation Map", "Lakes Map", "Rivers Map", "Settlements Map", "Ruddy Duck", "Egyptian Goose", "Natterer's Bat", "Cables Map", "Towers Map", "Substations Map", "Overhead Lines Map"),
+                options = layersControlOptions(collapsed = TRUE)
+            )
+        
+    })
+    observeEvent(input$map_view, {
+        click<-input$map_view
+        text<-paste("Latitude ", click$lat, "Longitude ", click$lng)
+        print(text)
+    })
+    
+    
+    
+    output$ruddy_duck_plot <- renderPlot(
+        ggplot(rdrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+            geom_line()+ ggtitle("Change over time of Ruddy Duck records in Cumbria") + xlab("Years of observation") + ylab("No. Ruddy Ducks recorded") +
+            theme_classic())
+    
+    output$egyptian_goose_plot <- renderPlot(
+        ggplot(egrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+            geom_line()+ ggtitle("Change over time of Egyptian Goose records in Cumbria") + xlab("Years of observation") + ylab("No. Egyptian Geese recorded") +
+            theme_classic())
+    
+    output$bat_plot <- renderPlot(
+        ggplot(batrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
+            geom_line() + ggtitle("Change over time of Natterer's Bat records in Cumbria") + xlab("Years of observation") + ylab("No. Natterer's Bat recorded") + 
+            theme_classic())
+    
+}
+
+# Run the shiny----
+
+shinyApp(ui = ui, server = server)
+
 
 
 
