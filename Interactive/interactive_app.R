@@ -194,9 +194,5 @@ map_view <- leaflet() %>%
 map_view
 
 
-# Load in images of the species of interest to be used later in the decision support system ####
 
-egyptian_goose_image <- base64enc::dataURI(file="www/egyptian_goose.JPG", mime="image/jpg")
-ruddy_duck_image     <- base64enc::dataURI(file="www/ruddy_duck.JPG", mime="image/jpg")
-natterers_bat_image  <- base64enc::dataURI(file="www/natterers_bat_image.JPG", mime="image/jpg")
 
