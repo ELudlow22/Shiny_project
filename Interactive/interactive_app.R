@@ -13,6 +13,14 @@ library(ggplot2)
 library(dplyr)
 library(rgbif)
 library(BIRDS)
+library(shiny)
+library(sf)
+library(raster)
+library(leaflet)
+library(leafem)
+
+library(rgdal)
+source("LOS.R")
 
 # Load up the non-interactive data in preparation for use in the shiny app ####
 
@@ -218,6 +226,8 @@ egyptian_goose_plot <- ggplot(egrecords_per_yr, aes(x = year.processed, y=count_
 # Use radioButtons to provide a checklist where the user can select an option
 
 
+
+
 ui <- fluidPage(
     
     # Application title
@@ -280,10 +290,17 @@ ui <- fluidPage(
                    
                    plotOutput(outputId = "bat_plot"),
                    
-                   leafletOutput(outputId = "map_view"))))
+                   leafletOutput(outputId = "map_view"),
+                   
+                   sliderInput("radius", "radius",
+                               min = 1000, max = 10000,
+                               value = 5000),
+                   
+                   leafletOutput(outputId = "viewshed"))))
 
 
-server <- function(input, output) {
+
+server <- function(input, output, session) {
     output$map_view <- renderLeaflet({
         leaflet() %>% 
             addTiles(group= "OSM") %>% 
@@ -311,10 +328,53 @@ server <- function(input, output) {
             )
         
     })
-    observeEvent(input$map_view, {
+    
+    sliderValues <- reactive({
+        
+        data.frame(
+            Name = c("radius"),
+            Value = as.character(c(input$radius)),
+            stringsAsFactors = FALSE)
+        
+    })
+    
+    output$viewshed <- renderLeaflet({
+        leaflet() %>%
+            setView(lng = -3.0886, lat=54.4609, zoom=11) %>%
+            addRasterImage(elevation_ll, colors=terrain.colors(25))
+    })
+    
+    # Detect a click event and grab coordinates for viewshed
+    observeEvent(input$viewshed_click, {
+        coord <- input$viewshed_click
+        lng <- coord$lng 
+        lat <- coord$lat
+        
+        # Create a sf points feature in latitude longitude 4326, and project back to OS 2770
+        # The if(length(c(lng,lat))) needed as when Shiny starts there is no data here
+        # so would otherwise give an error. On clicking the map, the lng and lat recorded
+        if(length(c(lng,lat))==2){
+            turbine_pt_ll <- data.frame(lat = lat, lng = lng) %>% 
+                st_as_sf(coords = c("lng", "lat")) %>% 
+                st_set_crs(4326)
+            turbine_pt_os <- st_transform(turbine_pt_ll, crs=27700)
+            turbine_pt_os <- st_geometry(turbine_pt_os)[[1]] # Only want geometry
+            
+            # Calculate 5km viewshed and reproject back to lat-lon
+            viewshed_5km_os <- viewshed(dem=elevation500m, windfarm=turbine_pt_os,
+                                        h1=1.5, h2=70, radius=5000)
+            viewshed_5km_ll <- projectRaster(viewshed_5km_os, crs=ll_crs)
+            
+            # Add to existing map            
+            leafletProxy("viewshed") %>% 
+                addRasterImage(viewshed_5km_ll, color="red")
+    
+        observeEvent(input$map_view, {
         click<-input$map_view
         text<-paste("Latitude ", click$lat, "Longitude ", click$lng)
         print(text)
+    })
+        }
     })
     
     
@@ -339,7 +399,6 @@ server <- function(input, output) {
 # Run the shiny----
 
 shinyApp(ui = ui, server = server)
-
 
 
 
