@@ -35,7 +35,7 @@ elevation_ll <- projectRaster(elevation, crs=ll_crs)
 # elevation500m is a coarser defined version of the elevation map that allows the script to run faster
 elevation500m <- aggregate(elevation, fact=10) # fact=10 is the number of cells aggregated together
 
-elevation500m_ll <- projectRaster(elevation500m, crs=ll_crs)
+elevation500m_ll <- projectRaster(elevation500m, crs = ll_crs)
 
 mapview(elevation500m_ll)
 
@@ -59,15 +59,16 @@ elevation_view
 
 #Settlement data 
 settlement    <- st_read("spatial/spatial/cumbria_settlements.shp")
-settlement_ll <- st_transform(settlement,crs=ll_crs)
+settlement_ll <- st_transform(settlement, crs = ll_crs)
 
 # Lakes data
 lakes    <- st_read("spatial/spatial/cumbria_lakes.shp")
-lakes_ll <- st_transform(lakes,crs=ll_crs)
+lakes_ll <- st_transform(lakes, crs = ll_crs, color="red")
+
 
 # Roads data
 roads    <- st_read("spatial/spatial/cumbria_roads.shp")
-roads_ll <- st_transform(roads,crs=ll_crs)
+roads_ll <- st_transform(roads, crs = ll_crs)
 
 # Rivers data
 rivers    <- st_read("spatial/spatial/cumbria_rivers.shp")
@@ -172,10 +173,10 @@ map_view <- leaflet() %>%
     setView(lng = -3.0886, lat = 54.4609, zoom = 9) %>%
     addFeatures(lakes_ll, group = "Lakes Map") %>%
     addFeatures(rivers_ll, group = "Rivers Map")%>%
-    addFeatures(cable_ll, group = "Cables Map")%>%
-    addFeatures(substation_ll, group = "Substations Map")%>%
-    addFeatures(ohl_ll,  group = "Overhead Lines Map")%>%
-    addFeatures(tower_ll, group = "Towers Map")%>%
+    addFeatures(cable_ll, color = "pink", group = "Cables Map")%>%
+    addFeatures(substation_ll, color = "pink", group = "Substations Map")%>%
+    addFeatures(ohl_ll, color = "pink", group = "Overhead Lines Map")%>%
+    addFeatures(tower_ll, color = "pink", group = "Towers Map")%>%
     addFeatures(settlement_ll, group = "Settlements Map")%>%
     addRasterImage(elevation500m_ll ,col=terrain.colors(30), group = "Elevation Map") %>% 
     addCircleMarkers(ruddy_duck$decimalLongitude.processed, ruddy_duck$decimalLatitude.processed, label = ruddy_duck$scientificName.processed,
@@ -290,10 +291,10 @@ server <- function(input, output) {
             setView(lng = -3.0886, lat = 54.4609, zoom = 9) %>%
             addFeatures(lakes_ll, group = "Lakes Map") %>%
             addFeatures(rivers_ll, group = "Rivers Map")%>%
-            addFeatures(cable_ll, group = "Cables Map")%>%
+            addFeatures(cable_ll, color = "pink", group = "Cables Map")%>%
             addFeatures(substation_ll, group = "Substations Map")%>%
-            addFeatures(ohl_ll, group = "Overhead Lines Map")%>%
-            addFeatures(tower_ll, group = "Towers Map")%>%
+            addFeatures(ohl_ll, color = "pink", group = "Overhead Lines Map")%>%
+            addFeatures(tower_ll, color = "pink", color = "pink", group = "Towers Map")%>%
             addFeatures(settlement_ll, group = "Settlements Map")%>%
             addRasterImage(elevation500m_ll ,col=terrain.colors(30), group = "Elevation Map") %>% 
             addCircleMarkers(ruddy_duck$decimalLongitude.processed, ruddy_duck$decimalLatitude.processed, label = ruddy_duck$scientificName.processed,
