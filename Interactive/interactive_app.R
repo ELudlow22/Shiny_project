@@ -33,7 +33,7 @@ elevation <- raster("spatial/spatial/elevation.tif")
 plot(elevation, col=terrain.colors(30))
 
 
-#Creating a dynamic map that can overlay different baselayers ####
+# Creating a dynamic map that can overlay different baselayers ####
 
 # Converting to latitude-longitude to enable the dynamic projection
 ll_crs <- CRS("+init=epsg:4326")  # 4326 is the code for latitude longitude
@@ -47,7 +47,7 @@ elevation500m_ll <- projectRaster(elevation500m, crs = ll_crs)
 
 mapview(elevation500m_ll)
 
-#This will be displayed in leaflet 
+# This will be displayed in leaflet 
 
 elevation_view <- leaflet() %>% 
     addTiles(group = "OSM (default)") %>% 
@@ -65,7 +65,7 @@ elevation_view
 
 # Loading in other variables in the same format as the elevation data, converting it to latitude and longitude ####
 
-#Settlement data 
+# Settlement data 
 settlement    <- st_read("spatial/spatial/cumbria_settlements.shp")
 settlement_ll <- st_transform(settlement, crs = ll_crs)
 
@@ -133,7 +133,6 @@ egrecords_per_yr <- egyptian_goose %>%
 ggplot(egrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
     geom_line()
 
-
 # Finally observe records for the Natterer's Bat
 bat <- read.csv("records-2021-05-09/records-2021-05-09.csv")
 bat <- bat[bat$identificationVerificationStatus.processed == "Accepted",]
@@ -150,7 +149,7 @@ ggplot(batrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
 
 # Creating an intermediate step of showing the species first in their own interactive map ####
 # Using addCircleMarkers the data can be plotted with identifying features
-#The overlayGroups and grouping feature within addCircleMarkers means these can be toggled on and off
+# The overlayGroups and grouping feature within addCircleMarkers means these can be toggled on and off
 
 species_plot <- leaflet() %>%
     addTiles(group = "OSM (default)") %>% 
@@ -220,13 +219,9 @@ egyptian_goose_plot <- ggplot(egrecords_per_yr, aes(x = year.processed, y=count_
     geom_line()
 
 
-
 # Using the above information, process it into the shiny app to display an interactive map
 # Add pieces of text to provide a more rounded description to aid the users experience
 # Use radioButtons to provide a checklist where the user can select an option
-
-
-
 
 ui <- fluidPage(
     
@@ -297,7 +292,6 @@ ui <- fluidPage(
                                value = 5000),
                    
                    leafletOutput(outputId = "viewshed"))))
-
 
 
 server <- function(input, output, session) {
@@ -378,7 +372,6 @@ server <- function(input, output, session) {
     })
     
     
-    
     output$ruddy_duck_plot <- renderPlot(
         ggplot(rdrecords_per_yr, aes(x = year.processed, y=count_per_year)) +
             geom_line()+ ggtitle("Change over time of Ruddy Duck records in Cumbria") + xlab("Years of observation") + ylab("No. Ruddy Ducks recorded") +
@@ -399,6 +392,7 @@ server <- function(input, output, session) {
 # Run the shiny----
 
 shinyApp(ui = ui, server = server)
+
 
 
 
