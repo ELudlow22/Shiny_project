@@ -305,7 +305,7 @@ server <- function(input, output, session) {
             addFeatures(cable_ll, color = "pink", group = "Cables Map")%>%
             addFeatures(substation_ll, group = "Substations Map")%>%
             addFeatures(ohl_ll, color = "pink", group = "Overhead Lines Map")%>%
-            addFeatures(tower_ll, color = "pink", color = "pink", group = "Towers Map")%>%
+            addFeatures(tower_ll, color = "pink", group = "Towers Map")%>%
             addFeatures(settlement_ll, group = "Settlements Map")%>%
             addRasterImage(elevation500m_ll ,col=terrain.colors(30), group = "Elevation Map") %>% 
             addCircleMarkers(ruddy_duck$decimalLongitude.processed, ruddy_duck$decimalLatitude.processed, label = ruddy_duck$scientificName.processed,
